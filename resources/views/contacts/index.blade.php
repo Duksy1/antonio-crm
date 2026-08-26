@@ -1,0 +1,7 @@
+@extends('layouts.app')
+@section('title','Kontakti')
+@section('content')
+<x-page-header eyebrow="LJUDI" title="Kontakti" description="Osobe koje pokreću svaku poslovnu priliku."><a class="primary-btn" href="{{ route('contacts.create') }}">＋ Novi kontakt</a></x-page-header>
+<x-view-toolbar :list-route="route('contacts.index')" :board-route="route('contacts.board')" filter-name="status" :options="App\Enums\ContactStatus::cases()" placeholder="Pretraži ime ili e-mail…" />
+<div class="entity-grid">@forelse($contacts as $contact)<a class="entity-card" href="{{ route('contacts.show',$contact) }}"><div class="entity-card-head"><div class="entity-identity"><span class="entity-avatar coral">{{ strtoupper(substr($contact->first_name,0,1).substr($contact->last_name,0,1)) }}</span><div><h3>{{ $contact->full_name }}</h3><p>{{ $contact->job_title ?: 'Pozicija nije unesena' }}</p></div></div><x-status :status="$contact->status" /></div><div class="entity-card-body"><div class="meta-row"><span>Tvrtka</span><strong>{{ $contact->company?->name ?? '—' }}</strong></div><div class="meta-row"><span>E-mail</span><strong>{{ $contact->email ?: '—' }}</strong></div></div><div class="entity-card-footer"><span>{{ $contact->phone ?: 'Bez telefona' }}</span><span>Detalji →</span></div></a>@empty<x-empty title="Nema pronađenih kontakata" text="Dodajte prvi kontakt ili promijenite filtere."><a class="primary-btn" href="{{ route('contacts.create') }}">Dodaj kontakt</a></x-empty>@endforelse</div><div class="pagination-wrap">{{ $contacts->links() }}</div>
+@endsection
