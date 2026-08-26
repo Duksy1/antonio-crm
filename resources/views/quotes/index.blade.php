@@ -1,0 +1,7 @@
+@extends('layouts.app')
+@section('title','Ponude')
+@section('content')
+<x-page-header eyebrow="DOKUMENTI" title="Ponude" description="Od nacrta do prihvaćenog posla, bez gubitka konteksta."><a class="primary-btn" href="{{ route('quotes.create') }}">＋ Nova ponuda</a></x-page-header>
+<x-view-toolbar :list-route="route('quotes.index')" :board-route="route('quotes.board')" filter-name="status" :options="App\Enums\QuoteStatus::cases()" placeholder="Pretraži broj ili naslov…" />
+<div class="entity-grid">@forelse($quotes as $quote)<a class="entity-card" href="{{ route('quotes.show',$quote) }}"><div class="entity-card-head"><div class="entity-identity"><span class="entity-avatar violet">▤</span><div><h3>{{ $quote->number }}</h3><p>{{ $quote->title }}</p></div></div><x-status :status="$quote->status" /></div><div class="entity-card-body"><div class="meta-row"><span>Klijent</span><strong>{{ $quote->company?->name ?? '—' }}</strong></div><div class="meta-row"><span>Ukupno</span><strong>{{ $quote->currency }} {{ number_format($quote->total,2,',','.') }}</strong></div></div><div class="entity-card-footer"><span>Vrijedi do {{ $quote->valid_until?->format('d.m.Y.') ?? '—' }}</span><span>Otvori →</span></div></a>@empty<x-empty title="Nema pronađenih ponuda" text="Izradite ponudu izravno ili iz kanbana dealova."><a class="primary-btn" href="{{ route('quotes.create') }}">Izradi ponudu</a></x-empty>@endforelse</div><div class="pagination-wrap">{{ $quotes->links() }}</div>
+@endsection
