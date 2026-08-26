@@ -1,0 +1,35 @@
+databases:
+  - name: antonio-crm-db
+    databaseName: antonio_crm
+    user: antonio_crm
+
+services:
+  - type: web
+    name: antonio-crm
+    runtime: docker
+    healthCheckPath: /login
+    envVars:
+      - key: APP_NAME
+        value: Antonio CRM
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        fromDatabase:
+          name: antonio-crm-db
+          property: connectionString
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: SEED_DEMO_DATA
+        value: true
