@@ -11,7 +11,6 @@
 <body class="app-body">
     <aside class="sidebar" id="sidebar">
         <div class="brand">
-            <span class="brand-mark">A</span>
             <span><strong>Antonio</strong><small>CRM</small></span>
         </div>
 

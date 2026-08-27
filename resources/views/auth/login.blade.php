@@ -8,7 +8,7 @@
 <body class="login-body">
     <main class="login-stage">
         <section class="login-story">
-            <a class="brand login-brand" href="/"><span class="brand-mark">A</span><span><strong>Antonio</strong><small>CRM</small></span></a>
+            <a class="brand login-brand" href="/"><span><strong>Antonio</strong><small>CRM</small></span></a>
             <div class="story-copy"><p class="eyebrow light">OD KONTAKTA DO DOGOVORA</p><h1>Prodaja koja ima<br><em>jasan smjer.</em></h1><p>Svi odnosi, prilike i ponude u jednom fokusiranom radnom prostoru.</p></div>
             <div class="story-signal"><span><i></i> Pipeline uživo</span><strong>€128k</strong><small>aktivnih prilika</small></div>
             <div class="orb orb-one"></div><div class="orb orb-two"></div>
