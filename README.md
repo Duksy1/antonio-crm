@@ -5,11 +5,10 @@ Antonio CRM je fokusiran prodajni radni prostor izrađen u Laravelu. Objedinjuje
 ## Tehnologije
 
 - PHP 8.3+ i Laravel 13
-- PostgreSQL 17
+- PostgreSQL 17+ (produkcija: PostgreSQL 18)
 - Blade, Tailwind CSS 4 i Vite
 - DOMPDF za generiranje ponuda u PDF-u
 - PHPUnit 12, Laravel HTTP testovi i Laravel Pint
-- Docker/Render konfiguracija za deployment
 
 ## Funkcionalnosti
 
@@ -25,39 +24,28 @@ Antonio CRM je fokusiran prodajni radni prostor izrađen u Laravelu. Objedinjuje
 - responzivno sučelje za desktop i mobilne uređaje
 - realistični demo podaci i CI workflow
 
-## Brzo pokretanje
-
-Preduvjeti: PHP 8.3+, Composer, Node.js 22+, Docker Desktop te omogućena PHP ekstenzija `pdo_pgsql`.
-
-```bash
-git clone <repository-url>
-cd antonio-crm
-cp .env.example .env
-composer install
-npm install
-docker compose up -d postgres
-php artisan key:generate
-php artisan migrate --seed
-npm run build
-php artisan serve
-```
-
-Aplikacija je dostupna na `http://127.0.0.1:8000`.
-
-Na Windowsu, ako je `pdo_pgsql` DLL prisutan ali nije uključen u `php.ini`, za jednokratne CLI naredbe može se koristiti:
-
-```powershell
-php -d extension=pdo_pgsql artisan migrate --seed
-```
-
-Za kontinuirani lokalni razvoj frontend asseta pokrenite `npm run dev` u zasebnom terminalu.
-
 ## Demo prijava
 
 - E-mail: `demo@antonio-crm.test`
 - Lozinka: `Antonio123!`
 
 Seeder je idempotentan: demo korisnika ažurira, a demo poslovne podatke ne duplicira ako već postoje.
+
+## Lokalno pokretanje
+
+Potrebni su PHP 8.3+, Composer, Node.js i Docker. Nakon kloniranja repozitorija izradite `.env` kopiranjem datoteke `.env.example`, a zatim pokrenite:
+
+```bash
+composer install
+npm ci
+docker compose up -d
+php artisan key:generate
+php artisan migrate --seed
+npm run build
+php artisan serve
+```
+
+Aplikacija će biti dostupna na `http://127.0.0.1:8000`, a za prijavu se koriste gore navedeni demo podaci.
 
 ## Testovi
 
@@ -88,32 +76,6 @@ Test suite pokriva prijavu, cijeli tijek izrade svih entiteta, obračun ponude, 
 
 Statusi su PHP backed enum tipovi. Relacije koriste strane ključeve, indekse i PostgreSQL decimalne stupce za novčane vrijednosti. Financijski izračuni ponude izvode se na serveru unutar transakcije; vrijednosti iz browsera ne smatraju se izvorom istine.
 
-## Produkcijski deployment
-
-Repozitorij sadrži multi-stage `Dockerfile` i `render.yaml` blueprint. Najjednostavniji deployment na Renderu:
-
-1. Pushajte projekt na GitHub/GitLab.
-2. U Renderu odaberite **New → Blueprint** i povežite repozitorij.
-3. Render će iz `render.yaml` izraditi web servis i PostgreSQL bazu.
-4. Postavite `APP_URL` na dodijeljeni javni URL.
-5. Nakon prvog deploya provjerite `/login` i prijavite se demo podacima.
-
-Docker entrypoint automatski izvršava `php artisan migrate --force`. `SEED_DEMO_DATA=true` uključuje idempotentni demo seed; za stvarnu produkciju nakon predaje preporučuje se promijeniti lozinku i postaviti vrijednost na `false`.
-
-Obavezne produkcijske varijable:
-
-```dotenv
-APP_NAME="Antonio CRM"
-APP_ENV=production
-APP_DEBUG=false
-APP_KEY=base64:...
-APP_URL=https://vas-url.example
-DB_CONNECTION=pgsql
-DB_URL=postgresql://user:password@host:5432/database
-SESSION_DRIVER=database
-CACHE_STORE=database
-```
-
 ## Struktura važnih direktorija
 
 ```text
@@ -123,7 +85,6 @@ app/Models         Eloquent modeli i relacije
 app/Services       server-side obračun ponude
 resources/views    originalni Blade UI i PDF predložak
 tests/Feature      end-to-end HTTP testovi CRM tokova
-docker             produkcijski entrypoint
 ```
 
 ## Sigurnosne napomene
