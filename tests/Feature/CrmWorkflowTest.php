@@ -68,6 +68,7 @@ class CrmWorkflowTest extends TestCase
         ]);
         $quote = Quote::with('items')->firstOrFail();
         $quoteResponse->assertRedirect(route('quotes.show', $quote));
+        $this->assertSame('AC-'.now()->year.'-0001', $quote->number);
         $this->assertSame('10000.00', $quote->subtotal);
         $this->assertSame('11250.00', $quote->total);
         $this->assertCount(1, $quote->items);

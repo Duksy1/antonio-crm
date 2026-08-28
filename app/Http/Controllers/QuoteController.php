@@ -9,6 +9,7 @@ use App\Models\Contact;
 use App\Models\Deal;
 use App\Models\Quote;
 use App\Services\QuoteCalculator;
+use App\Services\QuoteNumberGenerator;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,10 @@ use Illuminate\View\View;
 
 class QuoteController extends Controller
 {
-    public function __construct(private readonly QuoteCalculator $calculator) {}
+    public function __construct(
+        private readonly QuoteCalculator $calculator,
+        private readonly QuoteNumberGenerator $numberGenerator,
+    ) {}
 
     public function index(Request $request): View
     {
@@ -52,9 +56,9 @@ class QuoteController extends Controller
     {
         $quote = DB::transaction(function () use ($request) {
             $data = $request->validated();
-            $totals = $this->calculator->calculate($data['items'], (float) $data['discount_percent'], (float) $data['tax_percent']);
+            $totals = $this->calculator->calculate($data['items'], $data['discount_percent'], $data['tax_percent']);
             unset($data['items']);
-            $quote = $request->user()->quotes()->create([...$data, ...collect($totals)->except('items')->all(), 'number' => $this->nextNumber()]);
+            $quote = $request->user()->quotes()->create([...$data, ...collect($totals)->except('items')->all(), 'number' => $this->numberGenerator->next()]);
             $quote->items()->createMany($totals['items']);
 
             return $quote;
@@ -84,7 +88,7 @@ class QuoteController extends Controller
         $this->assertOwner($request, $quote);
         DB::transaction(function () use ($request, $quote) {
             $data = $request->validated();
-            $totals = $this->calculator->calculate($data['items'], (float) $data['discount_percent'], (float) $data['tax_percent']);
+            $totals = $this->calculator->calculate($data['items'], $data['discount_percent'], $data['tax_percent']);
             unset($data['items']);
             $quote->update([...$data, ...collect($totals)->except('items')->all()]);
             $quote->items()->delete();
@@ -116,15 +120,6 @@ class QuoteController extends Controller
         $quote->delete();
 
         return redirect()->route('quotes.index')->with('success', 'Ponuda je arhivirana.');
-    }
-
-    private function nextNumber(): string
-    {
-        $year = now()->year;
-        $latest = Quote::withTrashed()->where('number', 'like', "AC-{$year}-%")->lockForUpdate()->orderByDesc('id')->value('number');
-        $sequence = $latest ? ((int) str($latest)->afterLast('-')->toString()) + 1 : 1;
-
-        return sprintf('AC-%d-%04d', $year, $sequence);
     }
 
     private function lookups(Request $request): array
