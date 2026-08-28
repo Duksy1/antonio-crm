@@ -7,6 +7,8 @@ use App\Enums\ContactStatus;
 use App\Enums\DealStage;
 use App\Enums\QuoteStatus;
 use App\Models\User;
+use App\Services\QuoteCalculator;
+use App\Services\QuoteNumberGenerator;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -18,7 +20,7 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-    public function run(): void
+    public function run(QuoteCalculator $calculator, QuoteNumberGenerator $numberGenerator): void
     {
         $user = User::updateOrCreate(
             ['email' => 'demo@antonio-crm.test'],
@@ -74,13 +76,29 @@ class DatabaseSeeder extends Seeder
             ['deal' => 5, 'status' => QuoteStatus::Sent, 'title' => 'Digitalizacija naloga', 'amount' => 24000],
         ] as $index => $data) {
             $deal = $deals[$data['deal']];
-            $subtotal = $data['amount'];
-            $tax = $subtotal * .25;
-            $quote = $user->quotes()->create(['deal_id' => $deal->id, 'company_id' => $deal->company_id, 'contact_id' => $deal->contact_id, 'number' => sprintf('AC-%d-%04d', now()->year, $index + 1), 'title' => $data['title'], 'status' => $data['status'], 'issue_date' => now()->subDays(6 - $index), 'valid_until' => now()->addDays(8 + $index * 3), 'currency' => 'EUR', 'discount_percent' => 0, 'tax_percent' => 25, 'subtotal' => $subtotal, 'discount_total' => 0, 'tax_total' => $tax, 'total' => $subtotal + $tax, 'notes' => 'Hvala na ukazanom povjerenju.', 'terms' => 'Plaćanje u roku 15 dana od prihvaćanja ponude.']);
-            $quote->items()->createMany([
-                ['description' => 'Analiza i dizajn rješenja', 'quantity' => 1, 'unit' => 'paket', 'unit_price' => $subtotal * .25, 'line_total' => $subtotal * .25, 'position' => 0],
-                ['description' => 'Implementacija i puštanje u rad', 'quantity' => 1, 'unit' => 'paket', 'unit_price' => $subtotal * .75, 'line_total' => $subtotal * .75, 'position' => 1],
+            $analysisPrice = intdiv($data['amount'], 4);
+            $items = [
+                ['description' => 'Analiza i dizajn rješenja', 'quantity' => '1', 'unit' => 'paket', 'unit_price' => (string) $analysisPrice],
+                ['description' => 'Implementacija i puštanje u rad', 'quantity' => '1', 'unit' => 'paket', 'unit_price' => (string) ($data['amount'] - $analysisPrice)],
+            ];
+            $totals = $calculator->calculate($items, 0, 25);
+            $quote = $user->quotes()->create([
+                'deal_id' => $deal->id,
+                'company_id' => $deal->company_id,
+                'contact_id' => $deal->contact_id,
+                'number' => $numberGenerator->next(),
+                'title' => $data['title'],
+                'status' => $data['status'],
+                'issue_date' => now()->subDays(6 - $index),
+                'valid_until' => now()->addDays(8 + $index * 3),
+                'currency' => 'EUR',
+                'discount_percent' => 0,
+                'tax_percent' => 25,
+                ...collect($totals)->except('items')->all(),
+                'notes' => 'Hvala na ukazanom povjerenju.',
+                'terms' => 'Plaćanje u roku 15 dana od prihvaćanja ponude.',
             ]);
+            $quote->items()->createMany($totals['items']);
         }
     }
 }

@@ -7,6 +7,7 @@ Antonio CRM je fokusiran prodajni radni prostor izrađen u Laravelu. Objedinjuje
 - PHP 8.3+ i Laravel 13
 - PostgreSQL 17+ (produkcija: PostgreSQL 18)
 - Blade, Tailwind CSS 4 i Vite
+- Brick Math za determinističku decimalnu aritmetiku
 - DOMPDF za generiranje ponuda u PDF-u
 - PHPUnit 12, Laravel HTTP testovi i Laravel Pint
 
@@ -16,7 +17,8 @@ Antonio CRM je fokusiran prodajni radni prostor izrađen u Laravelu. Objedinjuje
 - CRUD za tvrtke, kontakte, dealove i ponude
 - kanban prikaz i brza promjena statusa/faze za svaki entitet
 - shortcut iz kartice deala u predpopunjenu novu ponudu
-- ponude s dinamičkim stavkama, popustom, PDV-om i server-side izračunom
+- ponude s dinamičkim stavkama, popustom, PDV-om i preciznim server-side decimalnim izračunom
+- atomsko generiranje godišnjih brojeva ponuda prilagođeno paralelnim zahtjevima
 - PDF export ponude
 - pretraga i filtriranje prilagođeni PostgreSQL-u (`ILIKE`)
 - vlasnička izolacija zapisa i zaštita od pristupa tuđim entitetima
@@ -74,7 +76,7 @@ Test suite pokriva prijavu, cijeli tijek izrade svih entiteta, obračun ponude, 
 - `deals` → povezuju tvrtku i kontakt, imaju prodajnu fazu
 - `quotes` → pripadaju dealu/tvrtki/kontaktu i imaju više `quote_items`
 
-Statusi su PHP backed enum tipovi. Relacije koriste strane ključeve, indekse i PostgreSQL decimalne stupce za novčane vrijednosti. Financijski izračuni ponude izvode se na serveru unutar transakcije; vrijednosti iz browsera ne smatraju se izvorom istine.
+Statusi su PHP backed enum tipovi. Relacije koriste strane ključeve, indekse i PostgreSQL decimalne stupce za novčane vrijednosti. Financijski izračuni ponude koriste decimalnu aritmetiku i eksplicitno `HALF_UP` zaokruživanje unutar transakcije; vrijednosti iz browsera ne smatraju se izvorom istine. Brojevi ponuda dodjeljuju se atomskim PostgreSQL counterom odvojenim po godini.
 
 ## Struktura važnih direktorija
 

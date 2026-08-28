@@ -24,15 +24,15 @@ class QuoteRequest extends FormRequest
             'issue_date' => ['required', 'date'],
             'valid_until' => ['nullable', 'date', 'after_or_equal:issue_date'],
             'currency' => ['required', 'string', 'size:3'],
-            'discount_percent' => ['required', 'numeric', 'between:0,100'],
-            'tax_percent' => ['required', 'numeric', 'between:0,100'],
+            'discount_percent' => ['required', 'decimal:0,2', 'between:0,100'],
+            'tax_percent' => ['required', 'decimal:0,2', 'between:0,100'],
             'notes' => ['nullable', 'string', 'max:5000'],
             'terms' => ['nullable', 'string', 'max:5000'],
             'items' => ['required', 'array', 'min:1', 'max:100'],
             'items.*.description' => ['required', 'string', 'max:255'],
-            'items.*.quantity' => ['required', 'numeric', 'gt:0'],
+            'items.*.quantity' => ['required', 'decimal:0,2', 'gt:0'],
             'items.*.unit' => ['required', 'string', 'max:20'],
-            'items.*.unit_price' => ['required', 'numeric', 'min:0'],
+            'items.*.unit_price' => ['required', 'decimal:0,2', 'min:0'],
         ];
     }
 }
