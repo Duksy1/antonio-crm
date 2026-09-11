@@ -20,9 +20,9 @@ class QuoteNumberGeneratorTest extends TestCase
     {
         $generator = app(QuoteNumberGenerator::class);
 
-        $this->assertSame('AC-2030-0001', $generator->next(2030));
-        $this->assertSame('AC-2030-0002', $generator->next(2030));
-        $this->assertSame('AC-2031-0001', $generator->next(2031));
+        $this->assertSame('AF-2030-0001', $generator->next(2030));
+        $this->assertSame('AF-2030-0002', $generator->next(2030));
+        $this->assertSame('AF-2031-0001', $generator->next(2031));
 
         $this->assertDatabaseHas('quote_number_counters', ['year' => 2030, 'last_number' => 2]);
         $this->assertDatabaseHas('quote_number_counters', ['year' => 2031, 'last_number' => 1]);
@@ -32,7 +32,7 @@ class QuoteNumberGeneratorTest extends TestCase
     {
         $user = User::factory()->create();
         $user->quotes()->create([
-            'number' => 'AC-2032-0042',
+            'number' => 'AF-2032-0042',
             'title' => 'Postojeća ponuda',
             'status' => QuoteStatus::Draft,
             'issue_date' => '2032-01-01',
@@ -41,14 +41,14 @@ class QuoteNumberGeneratorTest extends TestCase
             'tax_percent' => 25,
         ]);
 
-        $this->assertSame('AC-2032-0043', app(QuoteNumberGenerator::class)->next(2032));
+        $this->assertSame('AF-2032-0043', app(QuoteNumberGenerator::class)->next(2032));
     }
 
     public function test_counter_migration_backfills_existing_quote_numbers(): void
     {
         $user = User::factory()->create();
         $user->quotes()->create([
-            'number' => 'AC-2034-0123',
+            'number' => 'AF-2034-0123',
             'title' => 'Ponuda prije migracije',
             'status' => QuoteStatus::Draft,
             'issue_date' => '2034-01-01',
@@ -62,7 +62,7 @@ class QuoteNumberGeneratorTest extends TestCase
         $migration->up();
 
         $this->assertDatabaseHas('quote_number_counters', ['year' => 2034, 'last_number' => 123]);
-        $this->assertSame('AC-2034-0124', app(QuoteNumberGenerator::class)->next(2034));
+        $this->assertSame('AF-2034-0124', app(QuoteNumberGenerator::class)->next(2034));
     }
 
     public function test_a_rolled_back_transaction_does_not_consume_a_number(): void
@@ -71,7 +71,7 @@ class QuoteNumberGeneratorTest extends TestCase
 
         try {
             DB::transaction(function () use ($generator) {
-                $this->assertSame('AC-2033-0001', $generator->next(2033));
+                $this->assertSame('AF-2033-0001', $generator->next(2033));
 
                 throw new RuntimeException('Rollback testne transakcije.');
             });
@@ -79,7 +79,7 @@ class QuoteNumberGeneratorTest extends TestCase
             // Očekivani rollback.
         }
 
-        $this->assertSame('AC-2033-0001', $generator->next(2033));
+        $this->assertSame('AF-2033-0001', $generator->next(2033));
     }
 
     public function test_demo_seeder_uses_the_counter_and_decimal_calculator(): void
@@ -90,10 +90,10 @@ class QuoteNumberGeneratorTest extends TestCase
 
         $this->assertCount(4, $quotes);
         $this->assertSame([
-            'AC-'.now()->year.'-0001',
-            'AC-'.now()->year.'-0002',
-            'AC-'.now()->year.'-0003',
-            'AC-'.now()->year.'-0004',
+            'AF-'.now()->year.'-0001',
+            'AF-'.now()->year.'-0002',
+            'AF-'.now()->year.'-0003',
+            'AF-'.now()->year.'-0004',
         ], $quotes->pluck('number')->all());
         $this->assertSame('32000.00', $quotes->first()->subtotal);
         $this->assertSame('8000.00', $quotes->first()->tax_total);

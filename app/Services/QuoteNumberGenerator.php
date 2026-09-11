@@ -28,12 +28,12 @@ final class QuoteNumberGenerator
                 last_number = quote_number_counters.last_number + 1,
                 updated_at = CURRENT_TIMESTAMP
             RETURNING last_number
-            SQL, [$year, "^AC-{$year}-[0-9]+$"]);
+            SQL, [$year, "^AF-{$year}-[0-9]+$"]);
 
         if ($counter === null) {
             throw new RuntimeException('Nije moguće generirati broj ponude.');
         }
 
-        return sprintf('AC-%d-%04d', $year, (int) $counter->last_number);
+        return sprintf('AF-%d-%04d', $year, (int) $counter->last_number);
     }
 }

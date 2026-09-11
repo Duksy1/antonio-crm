@@ -18,13 +18,13 @@ return new class extends Migration
         DB::statement(<<<'SQL'
             INSERT INTO quote_number_counters (year, last_number, created_at, updated_at)
             SELECT
-                CAST(SUBSTRING(number FROM '^AC-([0-9]{4})-') AS SMALLINT),
+                CAST(SUBSTRING(number FROM '^AF-([0-9]{4})-') AS SMALLINT),
                 MAX(CAST(SUBSTRING(number FROM '([0-9]+)$') AS BIGINT)),
                 CURRENT_TIMESTAMP,
                 CURRENT_TIMESTAMP
             FROM quotes
-            WHERE number ~ '^AC-[0-9]{4}-[0-9]+$'
-            GROUP BY CAST(SUBSTRING(number FROM '^AC-([0-9]{4})-') AS SMALLINT)
+            WHERE number ~ '^AF-[0-9]{4}-[0-9]+$'
+            GROUP BY CAST(SUBSTRING(number FROM '^AF-([0-9]{4})-') AS SMALLINT)
             SQL);
     }
 

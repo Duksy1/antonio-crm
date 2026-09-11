@@ -68,7 +68,7 @@ class CrmWorkflowTest extends TestCase
         ]);
         $quote = Quote::with('items')->firstOrFail();
         $quoteResponse->assertRedirect(route('quotes.show', $quote));
-        $this->assertSame('AC-'.now()->year.'-0001', $quote->number);
+        $this->assertSame('AF-'.now()->year.'-0001', $quote->number);
         $this->assertSame('10000.00', $quote->subtotal);
         $this->assertSame('11250.00', $quote->total);
         $this->assertCount(1, $quote->items);
@@ -102,7 +102,7 @@ class CrmWorkflowTest extends TestCase
     {
         $company = $this->company();
         $quote = $this->user->quotes()->create([
-            'company_id' => $company->id, 'number' => 'AC-2026-0001', 'title' => 'Test ponuda',
+            'company_id' => $company->id, 'number' => 'AF-2026-0001', 'title' => 'Test ponuda',
             'status' => QuoteStatus::Draft, 'issue_date' => now(), 'currency' => 'EUR',
             'discount_percent' => 0, 'tax_percent' => 25, 'subtotal' => 100, 'discount_total' => 0,
             'tax_total' => 25, 'total' => 125,
