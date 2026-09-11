@@ -134,6 +134,9 @@ tests/Feature      end-to-end HTTP testovi CRM tokova
 - novčani ukupni iznosi nikada se ne prihvaćaju iz forme, nego se ponovno računaju na serveru
 - sustavske aktivnosti i tuđi zapisi vraćaju 404, a trajno brisanje je dostupno samo vlasniku
 - produkcija se pokreće s `APP_DEBUG=false`
+- `.env` i sve `.env.*` varijante ostaju izvan repozitorija, a `.env.example` sadrži samo lokalne placeholdere
+- `APP_KEY` se generira lokalno (`php artisan key:generate`) i u CI-ju pri svakom pokretanju; nikad se ne committa
+- produkcijske tajne (ključ, `DB_URL`, `APP_URL`) unose se kroz environment varijable hostinga, kao u `render.yaml`
 
 ---
 

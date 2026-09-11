@@ -22,7 +22,6 @@ jobs:
           --health-retries 5
     env:
       APP_ENV: testing
-      APP_KEY: base64:mYqSw0H2ERPXllIsHLZt/g0NZoBwVD7ci1gXd5RBCC0=
       DB_CONNECTION: pgsql
       DB_HOST: 127.0.0.1
       DB_PORT: 5432
@@ -40,6 +39,8 @@ jobs:
           node-version: '22'
           cache: npm
       - run: composer install --no-interaction --prefer-dist
+      - run: cp .env.example .env
+      - run: php artisan key:generate
       - run: npm ci && npm run build
       - run: php artisan test
       - run: vendor/bin/pint --test
