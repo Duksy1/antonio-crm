@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Quote::class, 'owner_id');
     }
+
+    public function activities(): HasMany
+    {
+        return $this->hasMany(Activity::class, 'owner_id');
+    }
 }

@@ -44,4 +44,9 @@ class Contact extends Model
     {
         return $this->hasMany(Quote::class);
     }
+
+    public function activities(): HasMany
+    {
+        return $this->hasMany(Activity::class);
+    }
 }

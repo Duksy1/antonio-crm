@@ -44,4 +44,19 @@ class Quote extends Model
     {
         return $this->hasMany(QuoteItem::class)->orderBy('position');
     }
+
+    public function isExpired(): bool
+    {
+        return $this->status === QuoteStatus::Sent && $this->valid_until !== null && $this->valid_until->isPast();
+    }
+
+    public function isOpen(): bool
+    {
+        return in_array($this->status, [QuoteStatus::Draft, QuoteStatus::Sent], true);
+    }
+
+    public function activities(): HasMany
+    {
+        return $this->hasMany(Activity::class);
+    }
 }
