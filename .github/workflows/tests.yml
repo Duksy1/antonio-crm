@@ -11,7 +11,7 @@ jobs:
       postgres:
         image: postgres:17-alpine
         env:
-          POSTGRES_DB: antonio_crm_test
+          POSTGRES_DB: apex_flow_crm_test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         ports: ["5432:5432"]
@@ -26,7 +26,7 @@ jobs:
       DB_CONNECTION: pgsql
       DB_HOST: 127.0.0.1
       DB_PORT: 5432
-      DB_DATABASE: antonio_crm_test
+      DB_DATABASE: apex_flow_crm_test
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
     steps:

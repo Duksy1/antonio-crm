@@ -1,16 +1,16 @@
 databases:
-  - name: antonio-crm-db
-    databaseName: antonio_crm
-    user: antonio_crm
+  - name: apex-flow-crm-db
+    databaseName: apex_flow_crm
+    user: apex_flow_crm
 
 services:
   - type: web
-    name: antonio-crm
+    name: apex-flow-crm
     runtime: docker
     healthCheckPath: /login
     envVars:
       - key: APP_NAME
-        value: Antonio CRM
+        value: Apex Flow CRM
       - key: APP_ENV
         value: production
       - key: APP_DEBUG
@@ -23,7 +23,7 @@ services:
         value: pgsql
       - key: DB_URL
         fromDatabase:
-          name: antonio-crm-db
+          name: apex-flow-crm-db
           property: connectionString
       - key: LOG_CHANNEL
         value: stderr

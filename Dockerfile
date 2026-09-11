@@ -26,10 +26,10 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 WORKDIR /var/www/html
 COPY --from=vendor /app .
 COPY --from=frontend /app/public/build ./public/build
-COPY docker/entrypoint.sh /usr/local/bin/antonio-crm-entrypoint
-RUN chmod +x /usr/local/bin/antonio-crm-entrypoint \
+COPY docker/entrypoint.sh /usr/local/bin/apex-flow-crm-entrypoint
+RUN chmod +x /usr/local/bin/apex-flow-crm-entrypoint \
     && chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 80
-ENTRYPOINT ["antonio-crm-entrypoint"]
+ENTRYPOINT ["apex-flow-crm-entrypoint"]
 CMD ["apache2-foreground"]

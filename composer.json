@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "apexflow/crm",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Apex Flow CRM — prodajni radni prostor (tvrtke, kontakti, dealovi, ponude, zadaci) izrađen u Laravelu.",
+    "keywords": ["laravel", "crm", "sales", "pipeline", "quotes"],
     "license": "MIT",
     "require": {
         "brick/math": "^0.18",

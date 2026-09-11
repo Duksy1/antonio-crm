@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\ActivityType;
 use App\Enums\CompanyStatus;
 use App\Enums\ContactStatus;
 use App\Enums\DealStage;
@@ -23,8 +24,8 @@ class DatabaseSeeder extends Seeder
     public function run(QuoteCalculator $calculator, QuoteNumberGenerator $numberGenerator): void
     {
         $user = User::updateOrCreate(
-            ['email' => 'demo@antonio-crm.test'],
-            ['name' => 'Antonio Horvat', 'password' => Hash::make('Antonio123!'), 'email_verified_at' => now()],
+            ['email' => 'demo@apexflow-crm.test'],
+            ['name' => 'Ana Vuković', 'password' => Hash::make('ApexFlow123!'), 'email_verified_at' => now()],
         );
 
         if ($user->companies()->exists()) {
@@ -99,6 +100,42 @@ class DatabaseSeeder extends Seeder
                 'terms' => 'Plaćanje u roku 15 dana od prihvaćanja ponude.',
             ]);
             $quote->items()->createMany($totals['items']);
+        }
+
+        foreach ($user->quotes()->get() as $quote) {
+            $user->activities()->create([
+                'company_id' => $quote->company_id,
+                'contact_id' => $quote->contact_id,
+                'deal_id' => $quote->deal_id,
+                'quote_id' => $quote->id,
+                'type' => ActivityType::System,
+                'subject' => 'Ponuda izrađena: '.$quote->number,
+                'completed_at' => $quote->created_at,
+            ]);
+        }
+
+        $activities = [
+            ['type' => ActivityType::Call, 'subject' => 'Pozvati Martu za potvrdu opsega isporuke', 'company' => 0, 'contact' => 0, 'deal' => 0, 'due' => now()->addHours(3), 'done' => false],
+            ['type' => ActivityType::Task, 'subject' => 'Poslati revidiranu ponudu s novim rokovima', 'company' => 0, 'contact' => 1, 'deal' => 0, 'due' => now()->subDays(2), 'done' => false],
+            ['type' => ActivityType::Meeting, 'subject' => 'Radionica s arhitektima Studija Sjever', 'company' => 1, 'contact' => 2, 'deal' => 1, 'due' => now()->addDays(2), 'done' => false],
+            ['type' => ActivityType::Task, 'subject' => 'Pripremiti tehničku specifikaciju za DACH', 'company' => 2, 'contact' => 3, 'deal' => 2, 'due' => now()->addDays(5), 'done' => false],
+            ['type' => ActivityType::Email, 'subject' => 'Poslati sažetak sastanka i zapisnik', 'company' => 3, 'contact' => 4, 'deal' => 3, 'due' => now()->subDay(), 'done' => true],
+            ['type' => ActivityType::Note, 'subject' => 'Klijent traži faznu isporuku kroz dva kvartala', 'company' => 4, 'contact' => 5, 'deal' => 4, 'due' => null, 'done' => true],
+            ['type' => ActivityType::Task, 'subject' => 'Dogovoriti demo za loyalty program', 'company' => 4, 'contact' => 5, 'deal' => 4, 'due' => now()->addDay(), 'done' => false],
+            ['type' => ActivityType::Call, 'subject' => 'Provjeriti zadovoljstvo nakon isporuke', 'company' => 5, 'contact' => 6, 'deal' => 5, 'due' => now()->subDays(6), 'done' => true],
+        ];
+
+        foreach ($activities as $data) {
+            $user->activities()->create([
+                'company_id' => $companies[$data['company']]->id,
+                'contact_id' => isset($data['contact']) ? $contacts[$data['contact']]->id : null,
+                'deal_id' => isset($data['deal']) ? $deals[$data['deal']]->id : null,
+                'type' => $data['type'],
+                'subject' => $data['subject'],
+                'notes' => 'Zabilježeno tijekom redovnog tjednog pregleda prodaje.',
+                'due_at' => $data['due'],
+                'completed_at' => $data['done'] ? now()->subHours(4) : null,
+            ]);
         }
     }
 }
